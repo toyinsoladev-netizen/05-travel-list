@@ -4,18 +4,28 @@ import { use, useState } from "react";
 const initialItems = [
   { id: 1, description: "Passports", quantity: 2, packed: false },
   { id: 2, description: "Socks", quantity: 12, packed: false },
-  { id: 3, description: "Shirts", quantity: 5, packed: true },
+  { id: 3, description: "Shirts", quantity: 5, packed: false },
   { id: 4, description: "Pants", quantity: 3, packed: false },
-  { id: 5, description: "Toothbrush", quantity: 1, packed: true },
+  { id: 5, description: "Toothbrush", quantity: 1, packed: false },
 ];
 
 export default function App() {
+  const [items, setItems] = useState([...initialItems]);
+
+  function handleAddItem(newItem) {
+    setItems((items) => [...items, newItem]);
+  }
+
+  function handleDeleteItem(id) {
+    setItems((items) => items.filter((item) => item.id !== id));
+  }
+
   return (
     <div>
       <Logo />
-      <PackingListForm />
+      <PackingListForm onAddItem={handleAddItem} />
       <hr />
-      <PackingList />
+      <PackingList items={items} />
       <Stats />
       <Footer />
     </div>
@@ -30,7 +40,7 @@ function Logo() {
   );
 }
 
-function PackingListForm() {
+function PackingListForm({ onAddItem }) {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState();
 
@@ -50,6 +60,8 @@ function PackingListForm() {
       packed: false,
     };
     console.log("New item added:", newItem);
+
+    onAddItem(newItem);
 
     // Clear the form fields after submission
     setDescription("");
@@ -81,11 +93,11 @@ function PackingListForm() {
   );
 }
 
-function PackingList() {
+function PackingList({ items }) {
   return (
     <div className="list">
       <ul>
-        {initialItems.map((item) => (
+        {items.map((item) => (
           <li key={item.id}>
             <input type="checkbox" />
             <span style={item.packed ? { textDecoration: "line-through" } : {}}>
